@@ -1,7 +1,8 @@
 import sys
-
 from enum import Enum
-from typing import List, Dict
+from typing import Dict, List
+
+import bibtexparser.model
 
 if sys.version_info >= (3, 8):
     from typing import TypedDict
@@ -10,7 +11,7 @@ else:
 
 
 class PublicationSource(str, Enum):
-    '''
+    """
     Defines the source of the publication. In general, a publication
     on Google Scholar has two forms:
     * Appearing as a PUBLICATION SNIPPET and
@@ -58,14 +59,15 @@ class PublicationSource(str, Enum):
     To fill in the publication, we open the "detailed view" of the paper
 
     Detailed view page: https://scholar.google.com/citations?view_op=view_citation&hl=en&citation_for_view=-Km63D4AAAAJ:d1gkVwhDpl0C
-    '''
+    """
+
     PUBLICATION_SEARCH_SNIPPET = "PUBLICATION_SEARCH_SNIPPET"
     AUTHOR_PUBLICATION_ENTRY = "AUTHOR_PUBLICATION_ENTRY"
     JOURNAL_CITATION_LIST = "JOURNAL_CITATION_LIST"
 
 
 class AuthorSource(str, Enum):
-    '''
+    """
     Defines the source of the HTML that will be parsed.
 
     Author page: https://scholar.google.com/citations?hl=en&user=yxUduqMAAAAJ
@@ -73,7 +75,8 @@ class AuthorSource(str, Enum):
     Search authors: https://scholar.google.com/citations?view_op=search_authors&hl=en&mauthors=jordan&btnG=
 
     Coauthors: From the list of co-authors from an Author page
-    '''
+    """
+
     AUTHOR_PROFILE_PAGE = "AUTHOR_PROFILE_PAGE"
     SEARCH_AUTHOR_SNIPPETS = "SEARCH_AUTHOR_SNIPPETS"
     CO_AUTHORS_LIST = "CO_AUTHORS_LIST"
@@ -83,6 +86,7 @@ class ProxyMode(str, Enum):
     """
     Defines the different types supported.
     """
+
     FREE_PROXIES = "FREE_PROXIES"
     SCRAPERAPI = "SCRAPERAPI"
     LUMINATI = "LUMINATI"
@@ -92,49 +96,14 @@ class ProxyMode(str, Enum):
     TOR_INTERNAL = "TOR_INTERNAL"
 
 
-''' Lightweight Data Structure to keep distribution of citations of the years '''
+""" Lightweight Data Structure to keep distribution of citations of the years """
 CitesPerYear = Dict[int, int]
 
 
-''' Lightweight Data Structure to hold the numbers articles available or
+""" Lightweight Data Structure to hold the numbers articles available or
     not available publicly according to funding mandates
-'''
-PublicAccess = TypedDict('PublicAccess', {"available": int, "not_available": int})
-
-
-class BibEntry(TypedDict, total=False):
-    """
-    :class:`BibEntry <BibEntry>` The bibliographic entry for a publication
-            (When source is not specified, the field is present in all sources)
-
-    :param pub_type: the type of entry for this bib (for example 'article') (source: PUBLICATION_SEARCH_SNIPPET)
-    :param bib_id: bib entry id (source: PUBLICATION_SEARCH_SNIPPET)
-    :param abstract: description of the publication
-    :param title: title of the publication
-    :param author: list of author the author names that contributed to this publication
-    :param pub_year: the year the publication was first published
-    :param venue: the venue of the publication (source: PUBLICATION_SEARCH_SNIPPET)
-    :param journal: Journal Name
-    :param volume: number of years a publication has been circulated
-    :param number: NA number of a publication
-    :param pages: range of pages
-    :param publisher: The publisher's name
-    :param citation: Formatted citation string, usually containing journal name, volume and page numbers (source: AUTHOR_PUBLICATION_ENTRY)
-    :param pub_url: url of the website providing the publication
-    """
-    pub_type: str
-    bib_id: str
-    abstract: str
-    title: str
-    author: str
-    pub_year: str
-    venue: str
-    journal: str
-    volume: str
-    number: str
-    pages: str
-    publisher: str
-    citation: str
+"""
+PublicAccess = TypedDict("PublicAccess", {"available": int, "not_available": int})
 
 
 class Mandate(TypedDict, total=False):
@@ -149,6 +118,7 @@ class Mandate(TypedDict, total=False):
     :param acknowledgement: text in the paper acknowledging the funding
     :param grant: grant ID that supported this work
     """
+
     agency: str
     url_policy: str
     url_policy_cached: str
@@ -205,7 +175,7 @@ class Publication(TypedDict, total=False):
                            is an Author or a Publication object.
     """
 
-    bib: BibEntry
+    bib: bibtexparser.model.Entry
     gsrank: int
     author_id: List[str]
     num_citations: int
@@ -223,6 +193,7 @@ class Publication(TypedDict, total=False):
     filled: bool
     source: PublicationSource
     container_type: str
+
 
 class Author(TypedDict, total=False):
     """
@@ -271,9 +242,10 @@ class Author(TypedDict, total=False):
     cites_per_year: CitesPerYear
     public_access: PublicAccess
     publications: List[Publication]
-    coauthors: List # List of authors. No self dict functionality available
+    coauthors: List  # List of authors. No self dict functionality available
     container_type: str
     source: AuthorSource
+
 
 class Journal(TypedDict, total=False):
     """
